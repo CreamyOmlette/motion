@@ -55,9 +55,10 @@
 /********************************************************************************/
 #include "bhy_support.h"
 #include "bhy_uc_driver_config.h"
-
-#include "FreeRTOS.h"
-#include "task.h"
+#include <unistd.h>				//Needed for I2C port
+#include <fcntl.h>				//Needed for I2C port
+#include <sys/ioctl.h>			//Needed for I2C port
+#include <linux/i2c-dev.h>		//Needed for I2C port
 
 /********************************************************************************/
 /*                                STATIC VARIABLES                              */
@@ -66,11 +67,73 @@ static struct bhy_t bhy;
 static uint8_t *version = BHY_MCU_REFERENCE_VERSION;
 
 /********************************************************************************/
-/*                         EXTERN FUNCTION DECLARATIONS                         */
+/*                         SUBSTITUTE FUNCTION DECLARATIONS                         */
 /********************************************************************************/
-extern int8_t sensor_i2c_write(uint8_t addr, uint8_t reg, uint8_t *p_buf, uint16_t size);
-extern int8_t sensor_i2c_read(uint8_t addr, uint8_t reg, uint8_t *p_buf, uint16_t size);
-extern void trace_log(const char *fmt, ...);
+int8_t sensor_i2c_write(uint8_t addr, uint8_t reg, uint8_t *p_buf, uint16_t size)
+{
+    int file_i2c;
+    //----- OPEN THE I2C BUS -----
+	char *filename = (char*)"/dev/i2c-1";
+	if ((file_i2c = open(filename, O_RDWR)) < 0)
+	{
+		//ERROR HANDLING: you can check errno to see what went wrong
+		printf("Failed to open the i2c bus");
+		return 1;
+	}
+
+	if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
+	{
+		printf("Failed to acquire bus access and/or talk to slave.\n");
+		//ERROR HANDLING; you can check errno to see what went wrong
+		return 1;
+	}
+		//<<< Number of bytes to write
+	if (write(file_i2c, p_buf, size) != size)		//write() returns the number of bytes actually written, if it doesn't match then an error occurred (e.g. no response from the device)
+	{
+		/* ERROR HANDLING: i2c transaction failed */
+		printf("Failed to write to the i2c bus.\n");
+	}
+
+    close(file_i2c);
+    return 0;
+}
+int8_t sensor_i2c_read(uint8_t addr, uint8_t reg, uint8_t *p_buf, uint16_t size)
+{
+    int file_i2c;
+    //----- OPEN THE I2C BUS -----
+	char *filename = (char*)"/dev/i2c-1";
+	if ((file_i2c = open(filename, O_RDWR)) < 0)
+	{
+		//ERROR HANDLING: you can check errno to see what went wrong
+		printf("Failed to open the i2c bus");
+		return 1;
+	}
+
+	if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
+	{
+		printf("Failed to acquire bus access and/or talk to slave.\n");
+		//ERROR HANDLING; you can check errno to see what went wrong
+		return 1;
+	}
+
+    //----- READ BYTES -----
+	if (read(file_i2c, p_buf, size != size)		//read() returns the number of bytes actually read, if it doesn't match then an error occurred (e.g. no response from the device)
+	{
+		//ERROR HANDLING: i2c transaction failed
+		printf("Failed to read from the i2c bus.\n");
+	}
+	else
+	{
+		printf("Data read: %s\n", p_buf);
+	}
+
+    close(file_i2c);
+    return 0;
+}
+extern void trace_log(const char *fmt, ...)
+{
+    return 0;
+}
 
 /********************************************************************************/
 /*                             FUNCTION DECLARATIONS                            */
@@ -82,7 +145,6 @@ extern void trace_log(const char *fmt, ...);
 int8_t bhy_initialize_support(void)
 {
     uint8_t tmp_retry = RETRY_NUM;
-
     bhy.bus_write = &sensor_i2c_write;
     bhy.bus_read = &sensor_i2c_read;
     bhy.delay_msec  = &bhy_delay_msec;
