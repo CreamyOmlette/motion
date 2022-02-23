@@ -1,30 +1,22 @@
-import FaBo9Axis_MPU9250
-import time
+import os
 import sys
+import time
+import smbus
+import numpy as np
 
-mpu9250 = FaBo9Axis_MPU9250.MPU9250()
+from imusensor.MPU9250 import MPU9250
+from imusensor.filters import kalman 
 
-try:
-    while True:
-        accel = mpu9250.readAccel()
-        print(f'ax ={accel["x"]}')
-        print(f'ay ={accel["y"]}')
-        print(f'az ={accel["z"]}')
+address = 0x68
+bus = smbus.SMBus(1)
+imu = MPU9250.MPU9250(bus, address)
+imu.begin()
+imu.loadCalibDataFromFile("/home/pi/Documents/motion-sleeve/calib.json")
 
-        gyro = mpu9250.readGyro()
-        print(f'gx ={gyro["x"]}')
-        print(f'gy ={gyro["y"]}')
-        print(f'gz ={gyro["z"]}')
-        
-        mag = mpu9250.readMagnet()
-        print(f'mx ={mag["x"]}')
-        print(f'my ={mag["y"]}')
-        print(f'mz ={mag["z"]}')
-        print('/n')
 
-        time.sleep(0.1)
+for i in range (30):
+	imu.readSensor()
+	imu.computeOrientation()
 
-except KeyboardInterrupt:
-    sys.exit()
-
-    
+	print ("Accel x: {0} ; Accel y : {1} ; Accel z : {2}".format(imu.AccelVals[0], imu.AccelVals[1], imu.AccelVals[2]))
+	time.sleep(0.1)
