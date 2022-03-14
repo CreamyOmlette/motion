@@ -33,6 +33,7 @@ def update_predict_record(dt, imu, x, F, H, P, R, Q, time_vals = [0], state_vals
 
 def get_kalman_values_1dof(dt):
   x_dim = 3
+  dt = dt/1000
   x = np.array([[0.],  # position
               [0.],  # velocity
               [0.]]) # acceleration
@@ -46,14 +47,15 @@ def get_kalman_values_1dof(dt):
   return x ,F, H, P, R, Q
 
 
-dt = 0.001
-x, F, H, P, R, Q = get_kalman_values_1dof(dt)
-imu = sensor_init(0x68)
-x_vals = [0]
-y_vals = [0]
-sum = 0.
-for i in range(5000):
-  x_vals, y_vals, x, P = update_predict_record(dt,imu, x, F, H, P, R, Q, x_vals, y_vals)
-  sum += x[0]
-  print(x[0])
-mean = sum/len(x_vals)
+def main(): 
+  dt = 0.001
+  x, F, H, P, R, Q = get_kalman_values_1dof(dt)
+  imu = sensor_init(0x68)
+  x_vals = [0]
+  y_vals = [0]
+  sum = 0.
+  for i in range(5000):
+    x_vals, y_vals, x, P = update_predict_record(dt,imu, x, F, H, P, R, Q, x_vals, y_vals)
+    sum += x[0]
+    print(x[0])
+  mean = sum/len(x_vals)
