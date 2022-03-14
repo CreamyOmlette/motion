@@ -42,7 +42,7 @@ def kalman_rot(dt):
 
 def main():
   dt = 1
-  imu = sensor_init(1, 0x68)
+  imu = sensor_init(0x68)
   f = kalman_rot(dt)
   x_vals = [0]
   y_vals = [0]
