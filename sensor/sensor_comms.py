@@ -14,8 +14,7 @@ def sensor_init(address, id):
   imu.loadCalibDataFromFile(f"/home/pi/Documents/motion-sleeve/calibration/calib-{id}.json")
   return imu
 
-def read_sensor(imu, sleep_time):
-  time.sleep(sleep_time)
+def read_sensor(imu):
   imu.readSensor()
   imu.computeOrientation()
   ax, ay, az = imu.AccelVals
