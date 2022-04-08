@@ -1,5 +1,5 @@
-from sensor_comms import sensor_init
-from sensor_comms import read_sensor
+from sensor.sensor_comms import sensor_init
+from sensor.sensor_comms import read_sensor
 import numpy as np
 from time import sleep, time
 from math import sin, cos, tan, pi
@@ -54,7 +54,7 @@ while True:
     phi_acc -= phi_offset
     theta_acc -= theta_offset
     
-    # Gey gyro measurements and calculate Euler angle derivatives
+    # Get gyro measurements and calculate Euler angle derivatives
     [p, q, r] = gyro
     phi_dot = p + sin(phi_hat) * tan(theta_hat) * q + cos(phi_hat) * tan(theta_hat) * r
     theta_dot = cos(phi_hat) * q - sin(phi_hat) * r
