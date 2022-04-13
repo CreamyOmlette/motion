@@ -14,10 +14,10 @@ imu.caliberateAccelerometer()
 accelscale = imu.Accels
 accelBias = imu.AccelBias
 gyroBias = imu.GyroBias
-imu.saveCalibDataToFile("/home/pi/Documents/motion-sleeve/calibration/calib.json")
+imu.saveCalibDataToFile("/home/pi/Documents/motion-sleeve/sensor/calibration/calib-4.json")
 print ("calib data saved")
 
-imu.loadCalibDataFromFile("/home/pi/Documents/motion-sleeve/calibration/calib.json")
+imu.loadCalibDataFromFile("/home/pi/Documents/motion-sleeve/sensor/calibration/calib-4.json")
 
 if np.array_equal(accelscale, imu.Accels) & np.array_equal(accelBias, imu.AccelBias) & \
 	np.array_equal(gyroBias, imu.GyroBias):
