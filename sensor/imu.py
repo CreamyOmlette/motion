@@ -1,10 +1,14 @@
 from imusensor.MPU9250 import MPU9250
 import cmath as math
+
+from numpy import number
+from sensor.kalman_euler import KalmanRollPitch
 import smbus
 
 class Imu:
-  
-  def __init__(self):
+  id: number
+
+  def __init__(self, id):
     bus = smbus.SMBus(1)
     imu = MPU9250.MPU9250(bus, 0x68)
     imu.begin()

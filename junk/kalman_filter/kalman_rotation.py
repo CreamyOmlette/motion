@@ -1,5 +1,5 @@
-from sensor.sensor_comms import sensor_init
-from sensor.sensor_comms import read_sensor
+from sensor.working.sensor_comms import sensor_init
+from sensor.working.sensor_comms import read_sensor
 import numpy as np
 from time import sleep, time
 from math import sin, cos, tan, pi

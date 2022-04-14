@@ -1,10 +1,9 @@
 import numpy as np
 import time
 from cmath import sin, cos, tan
-from sensor import read_sensor
 from sensor.imu import Imu
 
-class KalmanRollPitch:
+class KalmanRollPitchImu:
   offset_loops = 100
   state_estimate = np.array([[0], [0], [0], [0]])
   phi_hat = 0.0
@@ -16,10 +15,12 @@ class KalmanRollPitch:
   Q = np.eye(4)
   R = np.eye(2)
   is_first_run = True
-
+  imu: Imu
+  
   def __init__(self, imu: Imu):
     self.imu = imu
     self.prev_time = time()
+    self.calculate_offsets()
 
   def calculate_offsets(self):
     for i in range(self.offset_loops):
@@ -41,8 +42,7 @@ class KalmanRollPitch:
 
     # Get accelerometer measurements and remove offsets
     phi_acc, theta_acc = self.imu.get_accel()
-    gyto = self.imu.get_gyro()
-    
+
     phi_acc -= self.phi_offset
     theta_acc -= self.theta_offset
     
@@ -68,3 +68,4 @@ class KalmanRollPitch:
 
     self.phi_hat = state_estimate[0][0]
     self.theta_hat = state_estimate[2][0]
+    return self.phi_hat, self.theta_hat
