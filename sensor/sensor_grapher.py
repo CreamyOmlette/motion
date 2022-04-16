@@ -12,5 +12,5 @@ class SensorGrapher:
     history_phi, history_theta = self.switcher.get_data()
     x = range(len(history_phi[0]))
     plt.plot(x, history_phi[0])
-    plt.savefig('sensor0.png')
+    plt.savefig('sensor-0.png')
     

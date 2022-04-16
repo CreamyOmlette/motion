@@ -1,12 +1,11 @@
+from numbers import Number
 from imusensor.MPU9250 import MPU9250
-import cmath as math
-
-from numpy import number
-from sensor.kalman_euler import KalmanRollPitch
+import math
+import time
 import smbus
 
 class Imu:
-  id: number
+  id: Number
 
   def __init__(self, id):
     bus = smbus.SMBus(1)
@@ -14,6 +13,7 @@ class Imu:
     imu.begin()
     imu.loadCalibDataFromFile(f"/home/pi/Documents/motion-sleeve/sensor/calibration/calib-{id}.json")
     self.imu = imu
+    time.sleep(0.1)
 
   def get_accel(self):
     self.imu.readSensor()
