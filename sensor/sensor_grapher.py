@@ -4,13 +4,19 @@ from matplotlib.animation import FuncAnimation
 import numpy as np
 
 class SensorGrapher:
+  phi: np.array
+  theta = np.array
 
-  def __init__(self, switcher: Switcher) -> None:
-    self.switcher = switcher
+  def __init__(self, phi, theta) -> None:
+    self.phi = phi
+    self.theta = theta
   
   def graph(self):
-    history_phi, history_theta = self.switcher.get_data()
-    x = range(len(history_phi[0]))
-    plt.plot(x, history_phi[0])
-    plt.savefig('sensor-0.png')
+    x = range(len(self.phi[0]))
+    rows = self.phi.shape[0]
+    for r in rows:
+      plt.plot(x, self.phi[r])
+      plt.plot(x, self.theta[r])
+      plt.savefig(f"sensor-{r}.png")
+      plt.close()
     
