@@ -17,7 +17,7 @@ def main():
   filter = KalmanRollPitchImu(imu)
   while True:
     phi, theta = filter.predict_update()
-    print(float(phi))
+    print(float(theta))
 
 if(__name__ == "__main__"):
   main()

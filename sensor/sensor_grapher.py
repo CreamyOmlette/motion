@@ -12,11 +12,12 @@ class SensorGrapher:
     self.theta = theta
   
   def graph(self):
+    print("data collected, begin graphing")
     x = range(len(self.phi[0]))
     rows = self.phi.shape[0]
-    for r in rows:
-      plt.plot(x, self.phi[r])
-      plt.plot(x, self.theta[r])
+    for r in range(rows):
+      plt.scatter(x, self.phi[r])
+      plt.scatter(x, self.theta[r])
       plt.savefig(f"sensor-{r}.png")
       plt.close()
     
