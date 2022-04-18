@@ -1,30 +1,38 @@
 from typing import Sequence
 import time
 import RPi.GPIO as GPIO
+from matplotlib.pyplot import switch_backend
+from sensor.imu import Imu
 from sensor.kalman_euler import KalmanRollPitchImu
-from threading import Thread, Event
 import numpy as np
 
 class Switcher:
   sensors = []
   reading_address = 0
-  history_phi: np.array
-  history_theta: np.array
-  t: Thread
-  e = Event()
-  def __init__(self, dt: float, sensors: Sequence[KalmanRollPitchImu]):
-    self.dt = dt
-    self.sensors = sensors
-    self.history_phi = [[0.] for i in enumerate(sensors)]
-    self.history_theta = [[0.] for i in enumerate(sensors)]
+  phi_package: list
+  theta_package: list
+
+  def __init__(self, dt: float):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(17, GPIO.OUT)
     GPIO.setup(27, GPIO.OUT)
     GPIO.setup(22, GPIO.OUT)
-    self.t = Thread(target=self.stream_data)
-    self.t.start()
-    self.t.join()
-  
+    self.dt = dt
+    self.sensors = self.init_imus()
+    self.phi_package = [0. for i in range(len(self.sensors))]
+    self.theta_package = [0. for i in range(len(self.sensors))]
+
+  def init_imus(self):
+    sensors = []
+    for i in range(5):
+      try:
+        imu = Imu(i)
+        sensors.append(KalmanRollPitchImu(imu))
+        self.switch_address()
+      except Exception:
+        print(f"Exception at sensor {i}")
+    return sensors
+
   def switch_address(self):
     if(self.reading_address == 4):
       self.reading_address = 0
@@ -38,11 +46,9 @@ class Switcher:
     GPIO.output(27, int(addr[1]))
     GPIO.output(22, int(addr[2]))
 
-  def stream_data(self):
-    while(self.reading_address> -1 and self.reading_address < 5):
+  def get_package(self):
+    for i in range(len(self.sensors)):
       try:
-        if self.e.is_set():
-          break
         phi, theta = self.sensors[self.reading_address].predict_update()
         self.update_history(phi, theta)
         self.switch_address()
@@ -50,16 +56,10 @@ class Switcher:
       except OSError:
         print(f"I/O arror at sensor: {self.reading_address}")
         break
+    return self.phi_package, self.theta_package
 
   def update_history(self, phi: float, theta: float):
-    self.history_phi[self.reading_address].append(phi)
-    self.history_theta[self.reading_address].append(theta)
-
-  def get_data(self):
-    return self.history_phi, self.history_theta
-  
-  def terminate(self):
-    self.e.set()
-    self.t.join()
+    self.phi_package[self.reading_address] = phi
+    self.theta_package[self.reading_address] = theta
 
 
