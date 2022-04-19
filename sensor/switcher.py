@@ -5,6 +5,8 @@ from matplotlib.pyplot import switch_backend
 from sensor.imu import Imu
 from sensor.kalman_euler import KalmanRollPitchImu
 import numpy as np
+from math import pi
+import json
 
 class Switcher:
   sensors = []
@@ -12,7 +14,9 @@ class Switcher:
   roll_package: list
   pitch_package: list
   yaw_package: list
-
+  prev_ref_yaw: float
+  prev_ref_roll: float
+  
   def __init__(self, dt: float):
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(17, GPIO.OUT)
@@ -54,9 +58,9 @@ class Switcher:
         roll, pitch = self.sensors[self.reading_address].predict_update()
         psi = 0.
         if(self.reading_address == 0 or self.reading_address == 4):
-          self.yaw_package[self.reading_address] = self.sensors[self.reading_address].get_yaw()
-
-        self.update_history(roll, pitch)
+          psi = self.sensors[self.reading_address].get_yaw()
+          psi = psi * pi / 180
+        self.update_history(roll, pitch, psi)
         self.switch_address()
         time.sleep(self.dt)
       except OSError:
@@ -75,4 +79,16 @@ class Switcher:
       roll[i] = roll[i] - roll[4]
       pitch[i] = pitch[i] - pitch[4]
     yaw[0] = yaw[0] - yaw[4]
+    return roll, pitch, yaw
+  
+  def get_scaled(self):
+    roll, pitch, yaw = self.get_package()
+    scales = json.loads('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json')
+    roll_min, roll_max, pitch_min, pitch_max = scales[f"{self.reading_address}"]
+    roll_scaled = self.scale_func(roll_min, roll_max, roll)
+    pitch_scaled = self.scale_func(pitch_min, pitch_max, pitch)
+    yaw_scaled = yaw
+    return roll_scaled, pitch_scaled, yaw_scaled
 
+  def scale_func(self, min, max, x, a = 0, b = 100):
+    return (b - a)*(x - min)/(max - min) + a

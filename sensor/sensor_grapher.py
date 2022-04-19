@@ -12,7 +12,6 @@ class SensorGrapher:
   def __init__(self, roll, pitch, yaw) -> None:
     self.roll = roll
     self.pitch = pitch
-    self.yaw = yaw
 
   def graph(self):
     print("data collected, begin graphing")
@@ -21,9 +20,10 @@ class SensorGrapher:
     for r in range(rows):
       plt.plot(x, self.roll[r], label="roll")
       plt.plot(x, self.pitch[r], label="pitch")
-      plt.plot(x, self.yaw[r], label="yaw")
       plt.title(f"data from sensor {r}")
+      plt.legend()
       plt.savefig(f"sensor-{r}.png")
       plt.close()
+    print("done graphing, press a key to start again.")
   
 

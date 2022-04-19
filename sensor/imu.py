@@ -8,6 +8,8 @@ import smbus
 class Imu:
   id: Number
   sensorfusion: kalman.Kalman
+  curr_time = time.time()
+
   def __init__(self, id):
     bus = smbus.SMBus(1)
     imu = MPU9250.MPU9250(bus, 0x68)
@@ -20,9 +22,8 @@ class Imu:
       imu.computeOrientation()
       self.sensorfusion.roll = imu.roll
       self.sensorfusion.pitch = imu.pitch
-      self.sensorfusion.yaw = imu.yaw  
-      self.curr_time = time.time()
-    time.sleep(0.001)
+      self.sensorfusion.yaw = imu.yaw
+    time.sleep(0.01)
 
   def get_accel(self):
     self.imu.readSensor()
@@ -40,9 +41,9 @@ class Imu:
   def get_yaw(self):
     self.imu.readSensor()
     self.imu.computeOrientation()
-    newTime = time.time()
-    dt = newTime - currTime
-    currTime = newTime
+    new_time = time.time()
+    dt = new_time - self.curr_time
+    self.curr_time = new_time
 
     self.sensorfusion.computeAndUpdateRollPitchYaw(\
         self.imu.AccelVals[0], self.imu.AccelVals[1], self.imu.AccelVals[2],\
