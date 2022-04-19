@@ -1,19 +1,28 @@
 from numbers import Number
 from imusensor.MPU9250 import MPU9250
+from imusensor.filters import kalman 
 import math
 import time
 import smbus
 
 class Imu:
   id: Number
-
+  sensorfusion: kalman.Kalman
   def __init__(self, id):
     bus = smbus.SMBus(1)
     imu = MPU9250.MPU9250(bus, 0x68)
     imu.begin()
     imu.loadCalibDataFromFile(f"/home/pi/Documents/motion-sleeve/sensor/calibration/calib-{id}.json")
+    self.sensorfusion = kalman.Kalman()
     self.imu = imu
-    time.sleep(0.1)
+    if(id == 0 or id == 4):
+      imu.readSensor()
+      imu.computeOrientation()
+      self.sensorfusion.roll = imu.roll
+      self.sensorfusion.pitch = imu.pitch
+      self.sensorfusion.yaw = imu.yaw  
+      self.curr_time = time.time()
+    time.sleep(0.001)
 
   def get_accel(self):
     self.imu.readSensor()
@@ -27,3 +36,17 @@ class Imu:
     self.imu.readSensor()
     self.imu.computeOrientation()
     return self.imu.GyroVals
+  
+  def get_yaw(self):
+    self.imu.readSensor()
+    self.imu.computeOrientation()
+    newTime = time.time()
+    dt = newTime - currTime
+    currTime = newTime
+
+    self.sensorfusion.computeAndUpdateRollPitchYaw(\
+        self.imu.AccelVals[0], self.imu.AccelVals[1], self.imu.AccelVals[2],\
+        self.imu.GyroVals[0], self.imu.GyroVals[1], self.imu.GyroVals[2], \
+        self.imu.MagVals[0], self.imu.MagVals[1], self.imu.MagVals[2], dt)
+
+    return self.sensorfusion.yaw

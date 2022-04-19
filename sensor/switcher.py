@@ -9,8 +9,9 @@ import numpy as np
 class Switcher:
   sensors = []
   reading_address = 0
-  phi_package: list
-  theta_package: list
+  roll_package: list
+  pitch_package: list
+  yaw_package: list
 
   def __init__(self, dt: float):
     GPIO.setmode(GPIO.BCM)
@@ -19,8 +20,9 @@ class Switcher:
     GPIO.setup(22, GPIO.OUT)
     self.dt = dt
     self.sensors = self.init_imus()
-    self.phi_package = [0. for i in range(len(self.sensors))]
-    self.theta_package = [0. for i in range(len(self.sensors))]
+    self.roll_package = [0. for i in range(len(self.sensors))]
+    self.pitch_package = [0. for i in range(len(self.sensors))]
+    self.yaw_package = [0. for i in range(len(self.sensors))]
 
   def init_imus(self):
     sensors = []
@@ -49,17 +51,28 @@ class Switcher:
   def get_package(self):
     for i in range(len(self.sensors)):
       try:
-        phi, theta = self.sensors[self.reading_address].predict_update()
-        self.update_history(phi, theta)
+        roll, pitch = self.sensors[self.reading_address].predict_update()
+        psi = 0.
+        if(self.reading_address == 0 or self.reading_address == 4):
+          self.yaw_package[self.reading_address] = self.sensors[self.reading_address].get_yaw()
+
+        self.update_history(roll, pitch)
         self.switch_address()
         time.sleep(self.dt)
       except OSError:
         print(f"I/O arror at sensor: {self.reading_address}")
         break
-    return self.phi_package, self.theta_package
+    return self.roll_package, self.pitch_package, self.yaw_package
 
-  def update_history(self, phi: float, theta: float):
-    self.phi_package[self.reading_address] = phi
-    self.theta_package[self.reading_address] = theta
+  def update_history(self, phi: float, theta: float, psi: float):
+    self.roll_package[self.reading_address] = phi
+    self.pitch_package[self.reading_address] = theta
+    self.yaw_package[self.reading_address] = psi
 
+  def get_relative(self):
+    roll, pitch, yaw = self.get_package()
+    for i in range(4):
+      roll[i] = roll[i] - roll[4]
+      pitch[i] = pitch[i] - pitch[4]
+    yaw[0] = yaw[0] - yaw[4]
 

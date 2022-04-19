@@ -9,20 +9,23 @@ import numpy as np
 
 def main():
   switcher = Switcher(dt = 0.005)
-  phi_data = []
-  theta_data = []
+  roll_data = []
+  pitch_data = []
+  yaw_data = []
   while True:
-    phi_data.clear()
-    theta_data.clear()
+    roll_data.clear()
+    pitch_data.clear()
+    yaw_data.clear()
     print('start motion')
     for i in range(500):
-      phi, theta = switcher.get_package()
-      phi_data.append(phi.copy())
-      theta_data.append(theta.copy())
-    phi_data_transpose = np.array(phi_data).transpose()
-    theta_data_transpose = np.array(theta_data).transpose()
-
-    grapher = SensorGrapher(phi_data_transpose, theta_data_transpose)
+      phi, theta, yaw = switcher.get_relative()
+      roll_data.append(phi.copy())
+      pitch_data.append(theta.copy())
+      yaw_data.append(yaw.copy())
+    roll_data_transpose = np.array(roll_data).transpose()
+    pitch_data_transpose = np.array(pitch_data).transpose()
+    yaw_data_transpose = np.array(yaw_data).transpose()
+    grapher = SensorGrapher(roll_data_transpose, pitch_data_transpose, yaw_data_transpose)
     grapher.graph()
     a = input()
 
