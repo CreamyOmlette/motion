@@ -18,6 +18,9 @@ class KalmanRollPitchImu:
     self.R = np.eye(2)
     self.state_estimate = np.array([[0], [0], [0], [0]])
 
+  def get_yaw(self):
+    return self.imu.get_yaw()
+    
   def calculate_offsets(self):
     for i in range(self.offset_loops):
       phi, theta = self.imu.get_accel()
