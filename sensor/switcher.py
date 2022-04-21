@@ -1,3 +1,4 @@
+from os import path
 from typing import Sequence
 import time
 import RPi.GPIO as GPIO
@@ -82,13 +83,15 @@ class Switcher:
     return roll, pitch, yaw
   
   def get_scaled(self):
-    roll, pitch, yaw = self.get_package()
-    scales = json.loads('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json')
-    roll_min, roll_max, pitch_min, pitch_max = scales[f"{self.reading_address}"]
-    roll_scaled = self.scale_func(roll_min, roll_max, roll)
-    pitch_scaled = self.scale_func(pitch_min, pitch_max, pitch)
-    yaw_scaled = yaw
-    return roll_scaled, pitch_scaled, yaw_scaled
+    roll, pitch, yaw = self.get_relative()
+    json_file_path = '/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json'
+    with open(json_file_path, 'r') as j:
+     scales = json.loads(j.read())
+    for i in range(4):
+      [roll_min, roll_max, pitch_min, pitch_max] = scales[f"{i}"]
+      roll[i] = self.scale_func(roll_min, roll_max, roll[i])
+      pitch[i] = self.scale_func(pitch_max, pitch_min, pitch[i])
+    return roll, pitch, yaw
 
-  def scale_func(self, min, max, x, a = 0, b = 100):
+  def scale_func(self, min, max, x, a = 0., b = 100.):
     return (b - a)*(x - min)/(max - min) + a

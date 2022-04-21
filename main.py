@@ -26,6 +26,7 @@ def graphing_func():
     a = input()
 
 def main():
+  # calibrate_scaling_values()
   graphing_func()
 
 if(__name__ == "__main__"):

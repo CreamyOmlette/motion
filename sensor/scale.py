@@ -1,4 +1,3 @@
-from sensor.sensor_grapher import SensorGrapher
 from sensor.switcher import Switcher
 import json
 import numpy as np
@@ -27,5 +26,5 @@ def calibrate_scaling_values():
     max_pitch = np.max(pitch_data_transpose[i])
     calibration[i] = [min_roll, max_roll, min_pitch, max_pitch]
   
-  with open('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json', 'w', encoding='utf-8') as f:
+  with open('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json', 'w') as f:
     json.dump(calibration, f, ensure_ascii=False, indent=4)
