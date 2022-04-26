@@ -14,19 +14,26 @@ class Pwm_Switcher:
   process: Process
   terminated = True
 
-  def __init__(self, addr_pins, sig_pin, frequency, pwms, phase = 100):
+  def __init__(self, pwms, addr_pins = [17, 27, 22, 23], sig_pin = 24, frequency = 40, phase = 100):
     self.addr_pins = addr_pins
     self.sig_pin = sig_pin
     self.frequency = frequency
     self.pwms = pwms
+    self.init_pins()
     pass
+  
+  def init_pins(self):
+    for addr_pin in self.addr_pins:
+      GPIO.setup(addr_pin, GPIO.OUT)
+    GPIO.setup(self.sig_pin, GPIO.OUT)
 
   def empty_loop(pulse_width):
     for i in range(pulse_width*3):
       x = i 
 
-  def rest_until_cycle_ends():
-    pass
+  def rest_until_cycle_ends(self, dt):
+    rest = 1./self.frequency - dt
+    sleep(rest)
 
   def switch_address(self):
     if(self.addr == 14):
@@ -50,7 +57,7 @@ class Pwm_Switcher:
   
   def transfer_func_loop_time_approx(x):
     if(x >= 10):
-      return round(12.74*x - 111.7)
+      return round(12.8*x - 100)
     return 1
   
   def set_pwms(self, pwms):
@@ -60,15 +67,16 @@ class Pwm_Switcher:
   def generate_waveforms(self):
     GPIO.setwarnings(False)			#disable warnings
     GPIO.setmode(GPIO.BCM)
-    for i in range(len(self.pwms)):
+    while True:
       t = time()
-      self.generate_mux_signal(self.addr)
-      self.generate_pulse(self.pwms[i])
-      self.generate_mux_signal(15, self.phase)
-      self.switch_address()
-      dt = time() - time
-      rest = 1./self.frequency - dt
-      sleep(rest)
+      for i in range(len(self.pwms)):
+        self.generate_mux_signal(self.addr)
+        self.generate_pulse(self.pwms[i])
+        self.generate_mux_signal(15, self.phase)
+        self.switch_address()
+      dt = time() - t
+      self.rest_until_cycle_ends(dt)
+      
 
   def start_process(self):
     if(self.terminated):
