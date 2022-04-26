@@ -13,6 +13,7 @@ class Pwm_Switcher:
   frequency = 1
   process: Process
   terminated = True
+  phase = 1
 
   def __init__(self, pwms, addr_pins = [17, 27, 22, 23], sig_pin = 24, frequency = 40, phase = 100):
     self.addr_pins = addr_pins
@@ -20,6 +21,7 @@ class Pwm_Switcher:
     self.frequency = frequency
     self.pwms = pwms
     self.init_pins()
+    self.phase = phase
     pass
   
   def init_pins(self):
@@ -36,10 +38,10 @@ class Pwm_Switcher:
     sleep(rest)
 
   def switch_address(self):
-    if(self.addr == 14):
+    if (self.addr == 14):
       self.addr = 0
       self.rest_until_cycle_ends()
-    else:
+    elif (self.addr < 14):
       self.addr += 1
   
   def generate_mux_signal(self, address, phase):
