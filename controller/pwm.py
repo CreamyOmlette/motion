@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import ctypes
 from time import sleep
-from numpy import empty
 
 
 def empty_loop(pulse_width):
