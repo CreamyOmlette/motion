@@ -1,11 +1,7 @@
-from os import path
-from typing import Sequence
 import time
 import RPi.GPIO as GPIO
-from matplotlib.pyplot import switch_backend
 from sensor.imu import Imu
 from sensor.kalman_euler import KalmanRollPitchImu
-import numpy as np
 from math import pi
 import json
 
@@ -17,12 +13,13 @@ class Switcher:
   yaw_package: list
   prev_ref_yaw: float
   prev_ref_roll: float
-  
-  def __init__(self, dt: float):
+  addr_pins: list
+
+  def __init__(self, addr_pins: list, dt: float):
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(17, GPIO.OUT)
-    GPIO.setup(27, GPIO.OUT)
-    GPIO.setup(22, GPIO.OUT)
+    self.addr_pins = addr_pins
+    for pin in addr_pins:
+      GPIO.setup(pin, GPIO.OUT)
     self.dt = dt
     self.sensors = self.init_imus()
     self.roll_package = [0. for i in range(len(self.sensors))]
@@ -49,9 +46,8 @@ class Switcher:
 
   def generate_mux_signal(self):
     addr = '{0:03b}'.format(self.reading_address)
-    GPIO.output(17, int(addr[0]))
-    GPIO.output(27, int(addr[1]))
-    GPIO.output(22, int(addr[2]))
+    for i in range(len(self.addr_pins)):
+      GPIO.output(self.addr_pins[i], int(addr[i]))
 
   def get_package(self):
     for i in range(len(self.sensors)):
