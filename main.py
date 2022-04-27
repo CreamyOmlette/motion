@@ -1,11 +1,14 @@
-from controller.pwm import generate_waveform
+from controller.pwm_generator import Pwm_Generator
 
 def main():
-  # calibrate_scaling_values()
-  # create_motion_graphs()
-  # 3 loops - 9 us, 500 - 48 us
-  generate_waveform(1, 40, 2)
-  pass
+  try:
+    pwm_generator = Pwm_Generator(40)
+    pwm_generator.set_pwm(0, 10)
+    pwm_generator.set_pwm(1, 20)
+    pwm_generator.update()
+    a = input()
+  finally:
+    pwm_generator.terminate()
 
 if(__name__ == "__main__"):
   main()
