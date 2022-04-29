@@ -8,7 +8,7 @@ class Pwm_Generator():
   gpio_pins = []
   pwm: wavePWM.PWM
   pi: pigpio.pi
-  def __init__(self, frequency = 40, gpio_pins = [(14, 15), (18, 23)]):
+  def __init__(self, frequency = 40, gpio_pins = [(14, 15), (18, 23), (24, 25), (8, 7), (1, 12)]):
     self.frequency = frequency
     for g in gpio_pins:
       phase1, phase2 = g

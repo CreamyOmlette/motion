@@ -5,6 +5,9 @@ def main():
     pwm_generator = Pwm_Generator(40)
     pwm_generator.set_pwm(0, 10)
     pwm_generator.set_pwm(1, 20)
+    pwm_generator.set_pwm(2, 30)
+    pwm_generator.set_pwm(3, 40)
+    pwm_generator.set_pwm(4, 50)
     pwm_generator.update()
     a = input()
   finally:
