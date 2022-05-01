@@ -21,42 +21,41 @@ class KalmanRollPitchImu:
   def get_yaw(self):
     return self.imu.get_yaw()
     
-  def calculate_offsets(self):
-    for i in range(self.offset_loops):
-      phi, theta = self.imu.get_accel()
-      self.phi_offset += phi
-      self.theta_offset += theta
-    self.phi_offset = float(self.phi_offset) / float(self.offset_loops)
-    self.theta_offset = float(self.theta_offset) / float(self.offset_loops)
   
-  def predict_update(self) -> Tuple[float, float]:
+  def get_euler(self) -> Tuple[float, float]:
     dt = 0.0
     dt = time() - self.prev_time
     self.prev_time = time()
 
-    # Get accelerometer measurements and remove offsets
+    # Get accelerometer measurements
     angles, gyro = self.imu.get_accel(), self.imu.get_gyro()
     [phi_acc, theta_acc] = angles
     
-   # Get gyro measurements and calculate Euler angle derivatives
+    # Get gyro measurements
     [p, q, r] = gyro
 
+    # Calculate Euler Rates
     phi_dot = p + sin(self.phi_hat) * tan(self.theta_hat) * q + cos(self.phi_hat) * tan(self.theta_hat) * r
     theta_dot = cos(self.phi_hat) * q - sin(self.phi_hat) * r
 
-    # Kalman filter
+    # Predict
     A = np.array([[1, -dt, 0, 0], [0, 1, 0, 0], [0, 0, 1, -dt], [0, 0, 0, 1]])
     B = np.array([[dt, 0], [0, 0], [0, dt], [0, 0]])
 
     gyro_input = np.array([[phi_dot], [theta_dot]])
     self.state_estimate = A.dot(self.state_estimate) + B.dot(gyro_input)
+
+    # Compute Error Covariance
     self.P = A.dot(self.P.dot(np.transpose(A))) + self.Q
 
+    # Compute Kalman Gain
     measurement = np.array([[phi_acc], [theta_acc]])
     y_tilde = measurement - self.C.dot(self.state_estimate)
     S = self.R + self.C.dot(self.P.dot(np.transpose(self.C)))
     K = self.P.dot(np.transpose(self.C).dot(np.linalg.inv(S)))
     self.state_estimate = self.state_estimate + K.dot(y_tilde)
+
+    #Update Error Covariance
     self.P = (np.eye(4) - K.dot(self.C)).dot(self.P)
    
 
