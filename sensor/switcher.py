@@ -1,7 +1,8 @@
 import time
 import RPi.GPIO as GPIO
+from sensor.complementary_euler import ComplementaryRollPitch
 from sensor.imu import Imu
-from sensor.kalman_euler import KalmanRollPitchImu
+from sensor.kalman_euler import KalmanRollPitch
 from math import pi
 import json
 
@@ -35,7 +36,7 @@ class Switcher:
     for i in range(5):
       try:
         imu = Imu(i)
-        sensors.append(KalmanRollPitchImu(imu))
+        sensors.append(KalmanRollPitch(imu))
         self.switch_address()
       except Exception:
         print(f"Exception at sensor {i}")

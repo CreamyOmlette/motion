@@ -1,5 +1,6 @@
+from sensor.complementary_euler import ComplementaryRollPitch
 from sensor.imu import Imu
-from sensor.kalman_euler import KalmanRollPitchImu
+from sensor.kalman_euler import KalmanRollPitch
 import RPi.GPIO as GPIO
 
 
@@ -10,13 +11,13 @@ def main():
   GPIO.setup(17, GPIO.OUT)
   GPIO.setup(27, GPIO.OUT)
   GPIO.setup(22, GPIO.OUT)
-  GPIO.output(17, 1)
+  GPIO.output(17, 0)
   GPIO.output(27, 0)
   GPIO.output(22, 0)
   imu = Imu(0)
-  filter = KalmanRollPitchImu(imu)
+  filter = ComplementaryRollPitch(imu)
   while True:
-    phi, theta = filter.predict_update()
+    phi, theta = filter.get_euler()
     print(float(theta))
 
 if(__name__ == "__main__"):

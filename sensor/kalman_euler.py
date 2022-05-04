@@ -4,7 +4,7 @@ from time import time
 from math import sin, cos, tan
 from sensor.imu import Imu
 
-class KalmanRollPitchImu:
+class KalmanRollPitch:
   phi_hat = 0.0
   theta_hat = 0.0
   imu: Imu
