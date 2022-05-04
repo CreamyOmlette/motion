@@ -15,7 +15,7 @@ class Switcher:
   prev_ref_roll: float
   addr_pins: list
 
-  def __init__(self, addr_pins: list, dt: float):
+  def __init__(self, dt: float, addr_pins: list = [17, 27, 22]):
     GPIO.setmode(GPIO.BCM)
     self.addr_pins = addr_pins
     for pin in addr_pins:

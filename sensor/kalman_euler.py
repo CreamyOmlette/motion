@@ -29,6 +29,11 @@ class KalmanRollPitchImu:
     self.phi_offset = float(self.phi_offset) / float(self.offset_loops)
     self.theta_offset = float(self.theta_offset) / float(self.offset_loops)
   
+  def get_raw(self):
+    angles, gyro = self.imu.get_accel(), self.imu.get_gyro()
+    [phi_acc, theta_acc] = angles
+    return phi_acc, theta_acc
+
   def predict_update(self) -> Tuple[float, float]:
     dt = 0.0
     dt = time() - self.prev_time
