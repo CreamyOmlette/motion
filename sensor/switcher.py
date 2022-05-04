@@ -14,8 +14,9 @@ class Switcher:
   prev_ref_yaw: float
   prev_ref_roll: float
   addr_pins: list
+  scales: dict
 
-  def __init__(self, dt: float, addr_pins: list = [17, 27, 22]):
+  def __init__(self, addr_pins: list = [17, 27, 22], dt: float = 0.001):
     GPIO.setmode(GPIO.BCM)
     self.addr_pins = addr_pins
     for pin in addr_pins:
@@ -25,6 +26,9 @@ class Switcher:
     self.roll_package = [0. for i in range(len(self.sensors))]
     self.pitch_package = [0. for i in range(len(self.sensors))]
     self.yaw_package = [0. for i in range(len(self.sensors))]
+    json_file_path = '/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json'
+    with open(json_file_path, 'r') as j:
+     self.scales = json.loads(j.read())
 
   def init_imus(self):
     sensors = []
@@ -52,11 +56,8 @@ class Switcher:
   def get_package(self):
     for i in range(len(self.sensors)):
       try:
-        roll, pitch = self.sensors[self.reading_address].predict_update()
+        roll, pitch = self.sensors[self.reading_address].get_euler()
         psi = 0.
-        if(self.reading_address == 0 or self.reading_address == 4):
-          psi = self.sensors[self.reading_address].get_yaw()
-          psi = psi * pi / 180
         self.update_history(roll, pitch, psi)
         self.switch_address()
         time.sleep(self.dt)
@@ -80,11 +81,8 @@ class Switcher:
   
   def get_scaled(self):
     roll, pitch, yaw = self.get_relative()
-    json_file_path = '/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json'
-    with open(json_file_path, 'r') as j:
-     scales = json.loads(j.read())
     for i in range(4):
-      [roll_min, roll_max, pitch_min, pitch_max] = scales[f"{i}"]
+      [roll_min, roll_max, pitch_min, pitch_max] = self.scales[f"{i}"]
       roll[i] = self.scale_func(roll_min, roll_max, roll[i])
       pitch[i] = self.scale_func(pitch_max, pitch_min, pitch[i])
     return roll, pitch, yaw

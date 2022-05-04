@@ -13,7 +13,6 @@ class Pwm_Generator():
     self.frequency = frequency
     for g in gpio_pins:
       phase1, phase2 = g
-      self
       self.gpio_pins.append([0, phase1, phase2])
     self.pi = pigpio.pi()
     self.phase = phase
@@ -26,6 +25,13 @@ class Pwm_Generator():
   
   def set_pwm(self, channel_id: Number, pulse_width: Number):
     self.gpio_pins[channel_id][0] = round(pulse_width/2)
+
+  def set_pwms(self, pulse_widths: list):
+    if len(pulse_widths) > len(self.gpio_pins):
+      return 1
+    for i in enumerate(pulse_widths):
+      self.set_pwm(i, round(pulse_widths[i]/2))
+    return 0
 
   def update(self):
     for g in self.gpio_pins:
