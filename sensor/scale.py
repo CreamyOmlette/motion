@@ -8,7 +8,7 @@ def calibrate_scaling_values():
   pitch_data = []
   yaw_data = []
   calibration = dict()
-  for i in range(4):
+  for i in range(5):
     roll_data.clear()
     pitch_data.clear()
     yaw_data.clear()
@@ -27,4 +27,4 @@ def calibrate_scaling_values():
     calibration[i] = [min_roll, max_roll, min_pitch, max_pitch]
   
   with open('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json', 'w') as f:
-    json.dump(calibration, f, ensure_ascii=False, indent=4)
+    json.dump(calibration, f, ensure_ascii=False)
