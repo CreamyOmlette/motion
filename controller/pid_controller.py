@@ -19,7 +19,7 @@ class PidController:
     self.controllers.append(self.init_thumb_channel())
 
   def init_digit_channel(id, pwm_max = 14):
-    controller = PID(0.012, 0.000001348, 0.0000009)
+    controller = PID(0.03, 0.000001348, 0.0000009)
     controller.output_limits(0, pwm_max)
     return controller
   
