@@ -12,8 +12,8 @@ def main():
   GPIO.setup(27, GPIO.OUT)
   GPIO.setup(22, GPIO.OUT)
   GPIO.output(17, 0)
-  GPIO.output(27, 0)
-  GPIO.output(22, 0)
+  GPIO.output(27, 1)
+  GPIO.output(22, 1)
   imu = Imu(0)
   filter = ComplementaryRollPitch(imu)
   while True:

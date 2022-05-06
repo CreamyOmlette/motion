@@ -33,7 +33,7 @@ class Switcher:
 
   def init_imus(self):
     sensors = []
-    for i in range(5):
+    for i in range(6):
       try:
         imu = Imu(i)
         sensors.append(KalmanRollPitch(imu))
@@ -43,7 +43,7 @@ class Switcher:
     return sensors
 
   def switch_address(self):
-    if(self.reading_address == 4):
+    if(self.reading_address == 5):
       self.reading_address = 0
     else:
       self.reading_address += 1
@@ -74,6 +74,9 @@ class Switcher:
 
   def get_relative(self):
     roll, pitch, yaw = self.get_package()
+    for i in range(5):
+      roll[i] = roll[i] - roll[5]
+      pitch[i] = pitch[i] - pitch[5]
     for i in range(4):
       roll[i] = roll[i] - roll[4]
       pitch[i] = pitch[i] - pitch[4]
@@ -82,7 +85,7 @@ class Switcher:
   
   def get_scaled(self):
     roll, pitch, yaw = self.get_relative()
-    for i in range(4):
+    for i in range(5):
       [roll_min, roll_max, pitch_min, pitch_max] = self.scales[f"{i}"]
       roll[i] = self.scale_func(roll_min, roll_max, roll[i])
       pitch[i] = self.scale_func(pitch_max, pitch_min, pitch[i])

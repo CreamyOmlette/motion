@@ -8,13 +8,13 @@ def graphing_func():
   roll_data = []
   pitch_data = []
   yaw_data = []
-  for i in range(1):
+  for i in range(10):
     roll_data.clear()
     pitch_data.clear()
     yaw_data.clear()
     print('start motion')
     for i in range(300):
-      phi, theta, yaw = switcher.get_package()
+      phi, theta, yaw = switcher.get_scaled()
       roll_data.append(phi.copy())
       pitch_data.append(theta.copy())
       yaw_data.append(yaw.copy())

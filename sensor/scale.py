@@ -8,7 +8,7 @@ def calibrate_scaling_values():
   pitch_data = []
   yaw_data = []
   calibration = dict()
-  for i in range(4):
+  for i in range(6):
     roll_data.clear()
     pitch_data.clear()
     yaw_data.clear()
