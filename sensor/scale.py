@@ -27,4 +27,4 @@ def calibrate_scaling_values():
     calibration[i] = [min_roll, max_roll, min_pitch, max_pitch]
   
   with open('/home/pi/Documents/motion-sleeve/sensor/calibration/scale.json', 'w') as f:
-    json.dump(calibration, f, ensure_ascii=False, indent=4)
+    json.dump(calibration, f, ensure_ascii=False)

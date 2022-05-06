@@ -14,15 +14,22 @@ class PidController:
     self.switcher = switcher
     self.pwm_generator = pwm_gen
     self.channels = self.pwm_generator.get_channels()
-    self.init_controllers()
+    self.controllers = [self.init_digit_channel(i) for i in range(3)]
+    self.controllers.append(self.init_thumb_channel())
+    self.controllers.append(self.init_thumb_channel())
+
+  def init_digit_channel(id, pwm_max = 14):
+    controller = PID(0.012, 0.000001348, 0.0000009)
+    controller.output_limits(0, pwm_max)
+    return controller
+  
+  def init_thumb_channel(id, pwm_max = 27):
+    controller = PID(0.012, 0.000001348, 0.0000009)
+    controller.output_limits(0, pwm_max)
+    return controller
 
   def set_targets(self, targets: list):
     self.targets = targets
-
-  def init_controllers(self):
-    for i in range(self.channels):
-      self.controllers[i] = PID(0.012, 0.000001348, 0.0000009)
-      self.controllers[i].output_limits(0, 40)
   
   def set_points(self, targets):
     for i in len(self.targets):
