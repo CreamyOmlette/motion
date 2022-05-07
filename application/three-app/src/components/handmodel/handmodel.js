@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
 import { Controls, useControl } from "react-three-gui";
+import { login, saveflexion, savemotion } from "../../services/motionservice";
+import "./hand.css";
 const deg2rad = (degrees) => degrees * (Math.PI / 180);
 
 export default function HandModel({ ...props }) {
@@ -12,6 +14,8 @@ export default function HandModel({ ...props }) {
   const [flexion_ring, set_flex_ring] = useState(0);
   const [flexion_little, set_flex_little] = useState(0);
   const [flexion_thumb, set_flex_thumb] = useState(0);
+  const [clicked, set_clicked] = useState(false);
+  const [name, set_name] = useState("");
   useThree(({ camera }) => {
     camera.rotation.set(deg2rad(10), deg2rad(-10), deg2rad(0));
   });
@@ -110,6 +114,34 @@ export default function HandModel({ ...props }) {
     state: [flexion_thumb, set_flex_thumb],
   });
 
+  const preset_name = useControl("Name", {
+    type: "string",
+    value: "",
+    state: [name, set_name],
+    onChange: (e) => {
+      set_name(e);
+    },
+  });
+
+  const button = useControl("Save Preset", {
+    type: "button",
+    onClick: () => set_clicked(true),
+  });
+  const handleClick = () => {
+    let dto = {
+      name: name,
+      flexion_levels: [
+        100 - thumb_flexion,
+        100 - index_flexion,
+        100 - middle_flexion,
+        100 - little_flexion,
+        100 - wrist_flexion,
+      ],
+    };
+    savemotion(dto).then((obj) => {
+      console.log(obj);
+    });
+  };
   useFrame(() => {
     if (group.current) {
       group.current.rotation.y = 4.5;
@@ -143,6 +175,20 @@ export default function HandModel({ ...props }) {
     flexion_ring,
     flexion_thumb,
   ]);
+
+  useEffect(() => {
+    if (clicked) {
+      handleClick();
+      set_clicked(false);
+    }
+  }, [clicked]);
+
+  useEffect(() => {
+    login().then((obj) => {
+      console.log(obj);
+    });
+  }, []);
+
   return (
     <group ref={group} {...props} dispose={null}>
       <group position={[0.18, 0.62, -0.32]} scale={0.19}>
