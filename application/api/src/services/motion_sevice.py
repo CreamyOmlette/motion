@@ -15,18 +15,18 @@ class MotionService:
     self._motions = self._db.motions
     pass
 
-  def save_motion(self, name, trajectory_points):
-    if("email" not in session):
-      return "not logged in"
-    if(np.isnan(trajectory_points).any()):
+  def save_motion(self, name, flexion_levels):
+    # if("email" not in session):
+    #   return "not logged in"
+    if(np.isnan(flexion_levels).any()):
       return "has a nan"
-    if(self._motions.find_one({"email": session['email'], "name": name})):
+    if(self._motions.find_one({"email": 'test', "name": name})):
       return "name exists"
-    self._motions.insert_one({"email": session['email'], "name": name, 'trajectory_points': trajectory_points})
+    self._motions.insert_one({"email": 'test', "name": name, 'flexion_levels': flexion_levels})
     return 0
   
   def get_motion(self, name):
     if("email" not in session):
       return jsonify({"status-code": 1})
-    traj = self._motions.find_one({"email": session['email'], "name": name})['trajectory_points']
+    traj = self._motions.find_one({"email": session['email'], "name": name})['flexion_levels']
     return traj

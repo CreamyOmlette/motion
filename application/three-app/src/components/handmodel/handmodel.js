@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
 import { Controls, useControl } from "react-three-gui";
+import { login, saveflexion, savemotion } from "../../services/motionservice";
 import "./hand.css";
 const deg2rad = (degrees) => degrees * (Math.PI / 180);
 
@@ -127,14 +128,18 @@ export default function HandModel({ ...props }) {
     onClick: () => set_clicked(true),
   });
   const handleClick = () => {
-    console.log(name);
-    console.log({
-      flexion_wrist,
-      flexion_index,
-      flexion_middle,
-      flexion_little,
-      flexion_ring,
-      flexion_thumb,
+    let dto = {
+      name: name,
+      flexion_levels: [
+        100 - thumb_flexion,
+        100 - index_flexion,
+        100 - middle_flexion,
+        100 - little_flexion,
+        100 - wrist_flexion,
+      ],
+    };
+    savemotion(dto).then((obj) => {
+      console.log(obj);
     });
   };
   useFrame(() => {
@@ -177,6 +182,12 @@ export default function HandModel({ ...props }) {
       set_clicked(false);
     }
   }, [clicked]);
+
+  useEffect(() => {
+    login().then((obj) => {
+      console.log(obj);
+    });
+  }, []);
 
   return (
     <group ref={group} {...props} dispose={null}>

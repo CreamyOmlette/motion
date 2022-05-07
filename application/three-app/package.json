@@ -39,7 +39,9 @@
     ]
   },
   "devDependencies": {
+    "axios": "^0.27.2",
     "dat.gui": "^0.7.9",
+    "react-router-dom": "^6.3.0",
     "react-three-gui": "^0.4.2"
   }
 }
