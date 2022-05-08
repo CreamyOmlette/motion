@@ -1,0 +1,2 @@
+fingers:12 
+all finger and wrist: 25

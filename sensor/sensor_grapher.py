@@ -18,8 +18,8 @@ class SensorGrapher:
     x = range(len(self.roll[0]))
     rows = self.roll.shape[0]
     for r in range(rows):
-      plt.plot(x, self.roll[r], label="roll")
-      plt.plot(x, self.pitch[r], label="pitch")
+      plt.scatter(x, self.roll[r], label="roll")
+      plt.scatter(x, self.pitch[r], label="pitch")
       plt.title(f"data from sensor {r}")
       plt.legend()
       plt.savefig(f"sensor-{r}.png")
