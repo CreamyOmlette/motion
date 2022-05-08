@@ -131,11 +131,11 @@ export default function HandModel({ ...props }) {
     let dto = {
       name: name,
       flexion_levels: [
-        100 - thumb_flexion,
-        100 - index_flexion,
-        100 - middle_flexion,
-        100 - little_flexion,
-        100 - wrist_flexion,
+        thumb_flexion,
+        index_flexion,
+        middle_flexion,
+        little_flexion,
+        wrist_flexion,
       ],
     };
     savemotion(dto).then((obj) => {

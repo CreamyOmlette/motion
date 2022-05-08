@@ -1,3 +1,4 @@
+import email
 import pymongo
 import bcrypt
 from pymongo.server_api import ServerApi
@@ -32,5 +33,6 @@ class MotionService:
     return traj
   
   def get_motions(self):
-    presets = self._motions.find({"email": 'test'})
-    return presets
+    presets = self._motions.find({"email": "test"}, {"name": 1, "flexion_levels": 1})
+    res = { preset["name"]: preset["flexion_levels"] for i, preset in enumerate(presets)}
+    return res

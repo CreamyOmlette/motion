@@ -17,7 +17,5 @@ def save_flexion_levels():
 
 @motion_blueprint.route('/', methods=['GET'])
 def get_trajectory():
-  data = request.get_json()
-  name = data["name"]
-  res = motion_service.get_motion(name)
-  return jsonify({"trajectory_points": res})
+  res = motion_service.get_motions()
+  return jsonify(res)
