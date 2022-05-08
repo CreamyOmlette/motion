@@ -6,11 +6,14 @@ from sensor.scale import calibrate_scaling_values
 from sensor.switcher import Switcher
 import matplotlib.pyplot as plt
 import requests
+
 URL = "http://127.0.0.1:80/api"
+
 def login():
   PARAMS = {'email':'test', 'password':'test'}
   r = requests.post(url = URL + '/auth/login', params = PARAMS)
   pass
+
 def fetch_presets():
   PARAMS = {'email':'test', 'password':'test'}
   pass

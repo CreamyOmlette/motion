@@ -26,7 +26,11 @@ class MotionService:
     return 0
   
   def get_motion(self, name):
-    if("email" not in session):
-      return jsonify({"status-code": 1})
-    traj = self._motions.find_one({"email": session['email'], "name": name})['flexion_levels']
+    # if("email" not in session):
+    #   return jsonify({"status-code": 1})
+    traj = self._motions.find_one({"email": 'test', "name": name})['flexion_levels']
     return traj
+  
+  def get_motions(self):
+    presets = self._motions.find({"email": 'test'})
+    return presets
