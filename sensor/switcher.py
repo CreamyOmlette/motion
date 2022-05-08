@@ -88,7 +88,7 @@ class Switcher:
     for i in range(5):
       [roll_min, roll_max, pitch_min, pitch_max] = self.scales[f"{i}"]
       roll[i] = self.scale_func(roll_min, roll_max, roll[i])
-      pitch[i] = self.scale_func(pitch_max, pitch_min, pitch[i])
+      pitch[i] = self.scale_func(pitch_min, pitch_max, pitch[i])
     return roll, pitch, yaw
 
   def scale_func(self, min, max, x, a = 0., b = 100.):
