@@ -1,5 +1,5 @@
 import time
-from controller.digit_controller import FESController
+from controller.fes_controller import FESController
 from controller.pwm_generator import Pwm_Generator
 from sensor.graphing import graphing_func
 from sensor.scale import calibrate_scaling_values
