@@ -1,0 +1,8 @@
+.preset {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.4);
+}
+.flex {
+  display: flex;
+  justify-content: space-between;
+}

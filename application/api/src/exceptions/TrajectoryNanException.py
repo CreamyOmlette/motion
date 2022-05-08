@@ -1,0 +1,2 @@
+class TrajectoryNanException(Exception):
+  pass
