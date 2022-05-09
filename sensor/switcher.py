@@ -92,4 +92,4 @@ class Switcher:
     return roll, pitch, yaw
 
   def scale_func(self, min, max, x, a = 0., b = 100.):
-    return (b - a)*(x - min)/(max - min) + a
+    return (b - a)*((x+10) - (min+10))/(max - min) + a
