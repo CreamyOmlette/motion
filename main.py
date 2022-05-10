@@ -45,11 +45,10 @@ def execute_preset(choice):
     while dt < 10:
             roll , pitch, yaw = switcher.get_scaled()
             dt = time.time() - start
-            phase, next_pwm_wrist = wrist_controller.get_control_signal(pitch[4])
-            phase, next_pwm_thumb = thumb_controller.get_control_signal(pitch[0])
-            phase, next_pwm_index = index_controller.get_control_signal(pitch[1])
-            phase, next_pwm_middle = middle_controller.get_control_signal(pitch[0])
-            phase, next_pwm_ring = middle_controller.get_control_signal(pitch[0])
+            next_pwm_wrist = wrist_controller.get_control_signal(pitch[4])
+            next_pwm_thumb = thumb_controller.get_control_signal(pitch[0])
+            next_pwm_index = index_controller.get_control_signal(pitch[1])
+            next_pwm_middle = middle_controller.get_control_signal(pitch[2])
             if(next_pwm_wrist < 0):
               next_pwm_wrist = 0
             if(next_pwm_thumb < 0):
@@ -64,7 +63,6 @@ def execute_preset(choice):
             pwm_generator.set_pwm(1, round(next_pwm_thumb))
             pwm_generator.set_pwm(2, round(next_pwm_index))
             pwm_generator.set_pwm(3, round(next_pwm_middle))
-            pwm_generator.set_pwm(4, round(next_pwm_ring))
             if time.time() - prev_time > 0.01:
               prev_time = time.time()
               pwm_generator.update()
@@ -95,7 +93,7 @@ def control_graph_single():
       middle_controller = FESController(8, 12)
       thumb_controller = FESController(7, 10)
       target = 50
-      targets = [50, 50, 70, -1, -1]
+      targets = [0, 50, 0, 0, 0]
       digit_controller.set_target(targets[1])
       middle_controller.set_target(targets[2])
       thumb_controller.set_target(targets[0])
@@ -118,9 +116,9 @@ def control_graph_single():
           targetarr2.append(targets[2])
           dt = time.time() - start
           timearr.append(dt)
-          phase, next_pwm1 = digit_controller.get_control_signal(pitch[1])
-          phase, next_pwm2 = middle_controller.get_control_signal(pitch[2])
-          phase, next_pwm3 = thumb_controller.get_control_signal(pitch[0])
+          next_pwm1 = digit_controller.get_control_signal(pitch[1])
+          next_pwm2 = middle_controller.get_control_signal(pitch[2])
+          next_pwm3 = thumb_controller.get_control_signal(pitch[0])
           pwm_generator.set_pwm(0, round(next_pwm1))
           pwm_generator.set_pwm(1, round(next_pwm2))
           pwm_generator.set_pwm(2, round(next_pwm3))
@@ -129,11 +127,11 @@ def control_graph_single():
             pwm_generator.update()
     finally:    
       pwm_generator.terminate() 
-      plt.scatter(timearr[0:len(timearr)-1], pitcharr_middle[0:len(timearr)-1], label="middle position")
+      # plt.scatter(timearr[0:len(timearr)-1], pitcharr_middle[0:len(timearr)-1], label="middle position")
       plt.scatter(timearr[0:len(timearr)-1], pitcharr_index[0:len(timearr)-1], label="index position")
-      plt.scatter(timearr[0:len(timearr)-1], pitcharr_thumb[0:len(timearr)-1], label="thumb position")
-      plt.scatter(timearr[0:len(timearr)-1], targetarr1[0:len(timearr)-1], label="target index and thumb")
-      plt.scatter(timearr[0:len(timearr)-1], targetarr2[0:len(timearr)-1], label="target middle")
+      # plt.scatter(timearr[0:len(timearr)-1], pitcharr_thumb[0:len(timearr)-1], label="thumb position")
+      plt.scatter(timearr[0:len(timearr)-1], targetarr1[0:len(timearr)-1], label="target index")
+      # plt.scatter(timearr[0:len(timearr)-1], targetarr2[0:len(timearr)-1], label="target middle")
       plt.legend()
       plt.savefig("controller-index.png")
       plt.close()
