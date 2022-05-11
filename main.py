@@ -1,4 +1,5 @@
 import time
+from controller.fes_bidirectional_controller import FES_Bidirectional_Controller
 from controller.fes_controller import FESController
 from controller.pwm_generator import Pwm_Generator
 from sensor.graphing import graphing_func
@@ -69,7 +70,46 @@ def execute_preset(choice):
   finally:
     pwm_generator.terminate()
 
-
+def bidirectional():
+  try:
+      switcher = Switcher()
+      pwm_generator = Pwm_Generator(40)
+      wrist_controller = FES_Bidirectional_Controller(15, 10)
+      targets = [20, 70, 20, 70]
+      prev_time = time.time()
+      pitcharr_wrist = []
+      targetarr = []
+      timearr = []
+      start = time.time()
+      dt = 0.
+      dt = time.time() - start
+      for target in targets:
+        wrist_controller.set_target(target)
+        while dt < 10:
+            roll , pitch, yaw = switcher.get_scaled()
+            pitcharr_wrist.append(pitch[4])
+            targetarr.append(target)
+            dt = time.time() - start
+            timearr.append(dt)
+            next_pwm = wrist_controller.get_control_signal(pitch[4])
+            if(next_pwm >= 0):
+              pwm_generator.set_pwm(0, round(next_pwm))
+              pwm_generator.set_pwm(1, 0)
+            elif(next_pwm < 0):
+              pwm_generator.set_pwm(0, 0)
+              pwm_generator.set_pwm(1, round(-next_pwm))
+            if time.time() - prev_time > 0.005:
+              pwm_generator.update()
+  finally:    
+      pwm_generator.terminate() 
+      # plt.scatter(timearr[0:len(timearr)-1], pitcharr_middle[0:len(timearr)-1], label="middle position")
+      plt.scatter(timearr[0:len(timearr)-1], pitcharr_wrist[0:len(timearr)-1], label="wrist position")
+      # plt.scatter(timearr[0:len(timearr)-1], pitcharr_thumb[0:len(timearr)-1], label="thumb position")
+      plt.scatter(timearr[0:len(timearr)-1], targetarr[0:len(timearr)-1], label="target wrist")
+      # plt.scatter(timearr[0:len(timearr)-1], targetarr2[0:len(timearr)-1], label="target middle")
+      plt.legend()
+      plt.savefig("controller-wrist-bidirectional.png")
+      plt.close()
 def main():
   # try:
   #   pwm_generator = Pwm_Generator(40)
