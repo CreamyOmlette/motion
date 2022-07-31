@@ -37,6 +37,12 @@ The data flows striclty from one component in the pipeline to the next.
 # Demonstration
 It is difficult to demonstrate everything compactly but here are some of the examples:
 
-* 
+# Index finger control
+![this is an image](https://media.giphy.com/media/GxZn9zZTGNzLAcRTip/giphy.gif)
+<img src="/graphs/index50_web.png" data-canonical-src="/graphs/index50_web.png " height="480" />
 
+# Wrist control
+![this is an image](https://media.giphy.com/media/em5TiJ2sKa7B3ALfnU/giphy.gif)
 
+# Multiple finger control (Grab or Pinch)
+![this is an image](https://media.giphy.com/media/kuDLJ7hnMOmzlZehRj/giphy.gif)
