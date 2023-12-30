@@ -28,14 +28,13 @@ The data flows striclty from one component in the pipeline to the next.
 
 # User Stories( Functionality )
 - [x] User can register and login.
-- [x] User can motion presets.
+- [x] User can create motion presets.
 - [x] User can move individual fingers in the 3d model.
 - [x] User can store finger positions in the motion preset using controls.
 - [x] User can reproduce the wrist motion on hardware.
 - [x] User can reproduce the finger motion on hardware.
 
 # Demonstration
-It is difficult to demonstrate everything compactly but here are some of the examples:
 
 # Index finger control
 ![this is an image](https://media.giphy.com/media/GxZn9zZTGNzLAcRTip/giphy.gif)
